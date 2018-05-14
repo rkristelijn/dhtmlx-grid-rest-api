@@ -1,0 +1,6 @@
+html, body {
+  width: 100%; /*provides the correct work of a full-screen layout*/
+  height: 100%; /*provides the correct work of a full-screen layout*/
+  overflow: hidden; /*hides the default body's space*/
+  margin: 0px; /*hides the body's scrolls*/
+}
