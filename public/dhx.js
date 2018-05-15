@@ -13,12 +13,8 @@ dhtmlxEvent(window, "load", function () {
   toolbar.loadStruct("public/data/toolbar.xml");
 
   var contactsGrid = layout.cells("a").attachGrid();
-  // contactsGrid.setHeader("Name,Last Name,Email");   //sets the headers of columns
-  // contactsGrid.setColumnIds("fname,lname,email");         //sets the columns' ids
-  // contactsGrid.setInitWidths("250,250,*");   //sets the initial widths of columns
-  // contactsGrid.setColAlign("left,left,left");     //sets the alignment of columns
-  // contactsGrid.setColTypes("ro,ro,ro");               //sets the types of columns
-  // contactsGrid.setColSorting("str,str,str");  //sets the sorting types of columns
+  contactsGrid.attachHeader("#text_filter,#text_filter,#text_filter");
+
   contactsGrid.init();
   contactsGrid.load("public/data/grid.json", "json");
 });
