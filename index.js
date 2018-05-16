@@ -53,7 +53,7 @@ app.route('/connector/contacts/:id')
         console.log(err);
       } else {
         console.log('created:',contact);
-        res.send(contact);
+        res.json(contact);
       }
     });
 
