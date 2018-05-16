@@ -1,8 +1,8 @@
 {
   "head": [
-    {"width":250,"alight": "left","type":"ro","sort":"str","value":"Name"},
-    {"width":250,"alight": "left","type":"ro","sort":"str","value":"Last Name"},
-    {"width":"*","alight": "left","type":"ro","sort":"str","value":"Email"}
+    {"width":250,"alight": "left","type":"ed","sort":"str","value":"Name","id":"fname"},
+    {"width":250,"alight": "left","type":"ed","sort":"str","value":"Last Name","id":"lname"},
+    {"width":"*","alight": "left","type":"ed","sort":"str","value":"Email","id":"email"}
   ],
   "rows": [
     {"id": 1,"data": ["Anna","Anowik","anna@ghdjkg.com"]},
