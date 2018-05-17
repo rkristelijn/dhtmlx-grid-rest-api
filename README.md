@@ -16,7 +16,9 @@ DHTMLX is a cool GUI framework. If you work with the standard PHP server side co
 
 # Plan
 
-[x] Set up DHTMLX app using the [tutorial](https://docs.dhtmlx.com/tutorials__first_app__index.html)
-[x] connect all CRUD methods and get a working app
-* Clean up code
-* Implement socket.io
+- [x] Set up DHTMLX app using the [tutorial](https://docs.dhtmlx.com/tutorials__first_app__index.html)
+- [x] connect all CRUD methods and get a working app
+- [ ] Clean up code
+- [ ] Implement socket.io / drop using `dataProcessor`, maybe recompile dhtmlx using only the gui elements
+- [ ] drop all xml stuff, switch to json
+- [ ] create a repo for the data structures so I can update the application dynamically
