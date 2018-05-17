@@ -18,31 +18,32 @@ dhtmlxEvent(window, "load", function () {
   //contactsGrid.enableEditEvents(true,false,true);
   contactsGrid.init();
   //contactsGrid.post("data.php?id=1","data=10",null,"json");
-  contactsGrid.load("public/data/grid.json", "json");
+  //contactsGrid.load("public/data/grid.json", "json");
+  contactsGrid.load("connector/contacts", "json");
   // contactsGrid.setEditable(true);
 
   contactForm = layout.cells("b").attachForm();
   contactForm.loadStruct("public/data/form.xml");
   contactForm.bind(contactsGrid);
 
-  // dpg.attachEvent("onBeforeUpdate", function (id, state, data) {
-  //   console.log("BEFORE:", id, state, data);
-  //   dpg.setUpdated(id, false);
-  //   return true;
-  // });
-  // dpg.attachEvent("onAfterUpdate", function (sid, action, tid, tag) {
-  //   if (action == "inserted") {
-  //     //console.log('inserted');
-  //     //contactsGrid.selectRowById(tid);        //selects the newly-created row
-  //     //contactForm.setFocusOnFirstActive();//set focus to the 1st form's input
-  //   } else {
-  //     //console.log('other action:', sid, action, tid, tag);
-  //     //contactForm.setFormData(tag);
-  //     console.log("FIRED:", sid, action, tid, tag);
-  //     dpg.setUpdated(tid, false);
-  //     return false;
-  //   }
-  // });
+  var dpg = new dataProcessor("/connector/contacts/");         //inits dataProcessor
+  dpg.enableDebug(true);
+  dpg.setUpdateMode('row');
+  dpg.init(contactsGrid);   //associates the dataProcessor instance with the grid
+  dpg.setTransactionMode("REST");
+
+  dpg.attachEvent("onBeforeUpdate", function (id, state, data) {
+    console.log("BEFORE:", id, state, data);
+    dpg.setUpdated(id, false);
+    return true;
+  });
+  dpg.attachEvent("onAfterUpdate", function (sid, action, tid, tag) {
+    if (action == "inserted") {
+      console.log('inserted');
+      contactsGrid.selectRowById(tid);        //selects the newly-created row
+      contactForm.setFocusOnFirstActive();//set focus to the 1st form's input
+    }
+  });
 
 
   contactForm.attachEvent("onButtonClick", function (name) {
@@ -56,13 +57,6 @@ dhtmlxEvent(window, "load", function () {
   // contactForm.attachEvent("onblur", function () {
   //   contactForm.save();
   // })
-
-
-  var dpg = new dataProcessor("/connector/contacts/");         //inits dataProcessor
-  dpg.enableDebug(true);
-  dpg.setUpdateMode('row');
-  dpg.init(contactsGrid);   //associates the dataProcessor instance with the grid
-  dpg.setTransactionMode("REST");
 
   toolbar.attachEvent("onclick", function (id) {
     if (id == "newContact") {

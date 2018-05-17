@@ -8,7 +8,7 @@ mongoose.connect('mongodb://localhost/cms');
 let db = mongoose.connection;
 
 let Schema = mongoose.model('contacts', mongoose.Schema({
-  fname:'string',lname:'string',email:'string'
+  fname: 'string', lname: 'string', email: 'string'
 }));
 
 db.on('error', console.error.bind(console, 'Mongoose:'));
@@ -30,6 +30,14 @@ app.get('/', (req, res) => {
 app.route('/connector/contacts')
   .get((req, res) => {
     console.log('get');
+    Schema.find({}, (err, contacts) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(initGrid(contacts));
+        //res.json(contacts);
+      }
+    });
   })
   .post((req, res) => {
     console.log('post');
@@ -45,15 +53,27 @@ app.route('/connector/contacts/:id')
     delete data.head;
     console.log('put:', req.params.id, data);
 
-
-    let newContact = new Schema(data);
-    console.log(newContact);
-    newContact.save((err, contact) => {
-      if(err) {
+    Schema.findById(req.params.id, (err, contact) => {
+      if (err) {
         console.log(err);
-      } else {
-        console.log('created:',contact);
+      }
+      if (contact) {
+        contact.fname = data.fname;
+        contact.lname = data.lname;
+        contact.email = data.email;
+        contact.save();
         res.json(contact);
+      } else {
+        let newContact = new Schema(data);
+        console.log(newContact);
+        newContact.save((err, contact) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('created:', contact);
+            res.json(contact);
+          }
+        });
       }
     });
 
@@ -98,6 +118,41 @@ app.route('/connector/contacts/:id')
 //   //   }
 //   // });
 // });
+
+function initGrid(data) {
+  let payload = {
+    head: [{
+      id: 'fname',
+      width: 150,
+      align: 'left',
+      type: 'ed',
+      sort: 'str',
+      value: 'First'
+    }, {
+      id: 'lname',
+      width: 150,
+      align: 'left',
+      type: 'ed',
+      sort: 'str',
+      value: 'Last'
+    }, {
+      id: 'email',
+      width: '*',
+      align: 'left',
+      type: 'ed',
+      sort: 'str',
+      value: 'Email'
+    }
+    ],
+    rows: []
+  };
+  for (row of data) {
+    console.log('adding', row);
+    let values = [row.fname, row.lname, row.email];
+    payload.rows.push({ id: row._id, data: values });
+  }
+  return payload;
+}
 
 app.listen(3000, () => {
   console.log('listening on *:3000');
