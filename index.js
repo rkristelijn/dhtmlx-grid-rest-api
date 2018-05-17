@@ -48,10 +48,11 @@ app.route('/connector/contacts/:id')
     console.log('get:', req.params.id);
   })
   .put((req, res) => {
+    console.log('put::', req.params, req.body);
     let data = req.body;
     delete data.gr_id;
     delete data.head;
-    console.log('put:', req.params.id, data);
+    console.log('--put:', req.params.id, data);
 
     Schema.findById(req.params.id, (err, contact) => {
       if (err) {
@@ -91,6 +92,16 @@ app.route('/connector/contacts/:id')
   })
   .delete((req, res) => {
     console.log('delete', req.params.id);
+    Schema.findById(req.params.id, (err, contact) => {
+      if (err) {
+        console.log('error:', err);
+      } else if (!contact) {
+        console.log('contact not found');
+      } else {
+        contact.remove();
+        res.sendStatus(204);
+      }
+    });
   });
 // app.get('/connector/contacts', (req, res) => {
 //   let Schema = mongoose.model('contacts', mongoose.Schema({}));

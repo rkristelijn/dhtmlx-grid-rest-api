@@ -42,6 +42,8 @@ dhtmlxEvent(window, "load", function () {
       console.log('inserted');
       contactsGrid.selectRowById(tid);        //selects the newly-created row
       contactForm.setFocusOnFirstActive();//set focus to the 1st form's input
+    } else {
+      console.log("ACTION:", sid, action, tid, tag);
     }
   });
 
@@ -72,12 +74,23 @@ dhtmlxEvent(window, "load", function () {
       var rowId = contactsGrid.getSelectedRowId();
       var rowIndex = contactsGrid.getRowIndex(rowId);
       if (rowId != null) {
-        contactsGrid.deleteRow(rowId);
-        if (rowIndex != (contactsGrid.getRowsNum() - 1)) {
-          contactsGrid.selectRow(rowIndex + 1, true);
-        } else {
-          contactsGrid.selectRow(rowIndex - 1, true)
-        }
+        //dpg.setUpdateMode('off');
+        dpg.ignore(() => {
+          contactsGrid.deleteRow(rowId);
+          fetch('/connector/contacts/' + rowId, {
+            method: 'delete'
+          }).then(function (response) {
+            console.log('response', response);
+          }).catch(function (err) {
+            console.log('error', err);
+          });
+          if (rowIndex != (contactsGrid.getRowsNum() - 1)) {
+            contactsGrid.selectRow(rowIndex + 1, true);
+          } else {
+            contactsGrid.selectRow(rowIndex - 1, true)
+          }
+        });
+        //dpg.setUpdateMode('row');
       }
     }
   });
