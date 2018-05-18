@@ -1,0 +1,23 @@
+[
+  {
+    "id": "newContact",
+    "type": "button",
+    "img": "add_contact.gif",
+    "imgdis": "add_contact_dis.gif"
+  },
+  {
+    "id": "delContact",
+    "type": "button",
+    "img": "delete_contact.gif",
+    "imgdis": "delete_contact_dis.gif"
+  },
+  {
+    "id": "spe01",
+    "type": "separator"
+  },
+  {
+    "id": "help",
+    "type": "button",
+    "text": "Help"
+  }
+]

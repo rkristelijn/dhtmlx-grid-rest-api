@@ -1,26 +1,25 @@
 dhtmlxEvent(window, "load", function () {
+  // the applet has a layout, we need to define the layout type, attach it to some element and set the cells
   var layout = new dhtmlXLayoutObject(document.body, "2U");
   layout.cells("a").setText("Contacts");
   layout.cells("b").setText("Contact Details");
   layout.cells("b").setWidth(400);
 
+  // now we can add a menu, set the path to the icons and load the structure using json
   var menu = layout.attachMenu();
   menu.setIconsPath("icons/");
-  menu.loadStruct("public/data/menu.xml");
+  menu.loadStruct("public/data/menu.json");
 
   var toolbar = layout.attachToolbar();
   toolbar.setIconsPath("icons/");
-  toolbar.loadStruct("public/data/toolbar.xml");
+  toolbar.loadStruct("public/data/toolbar.json");
 
   var contactsGrid = layout.cells("a").attachGrid();
   contactsGrid.attachHeader("#text_filter,#text_filter,#text_filter");
 
-  contactsGrid.init();
-  contactsGrid.load("connector/contacts", "json");
-
   contactForm = layout.cells("b").attachForm();
-  contactForm.loadStruct("public/data/form.xml");
   contactForm.bind(contactsGrid);
+  contactForm.loadStruct("public/data/form.json");
 
   var dpg = new dataProcessor("/connector/contacts/");
   dpg.enableDebug(true);
@@ -28,19 +27,32 @@ dhtmlxEvent(window, "load", function () {
   dpg.init(contactsGrid);
   dpg.setTransactionMode("REST");
 
+  contactsGrid.init();
+  contactsGrid.load("connector/contacts", "json");
+
+  contactsGrid.attachEvent("onDataReady", function () {
+    contactsGrid.selectRowById(contactsGrid.getRowId(0));
+    contactForm.setFocusOnFirstActive();
+  });
+
   dpg.attachEvent("onBeforeUpdate", function (id, state, data) {
     dpg.setUpdated(id, false);
     return true;
   });
   dpg.attachEvent("onAfterUpdate", function (sid, action, tid, tag) {
-    if (action == "inserted") {
-      contactsGrid.selectRowById(tid);
-      contactForm.setFocusOnFirstActive();
+    console.log("TAG:", sid, action, tid, tag);
+    switch (action) {
+      case "inserted":
+        contactsGrid.selectRowById(tid);
+        contactForm.setFocusOnFirstActive();
+        break;
+      case "updated":
+        contactsGrid.changeRowId(tid, tag._id);
+        break;
     }
   });
 
-
-  contactForm.attachEvent("onButtonClick", function (name) {
+  contactForm.attachEvent("onBlur", function (name) {
     dpg.setUpdateMode('off');
     contactForm.save();
     dpg.sendData();

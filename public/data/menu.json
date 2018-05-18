@@ -1,0 +1,37 @@
+[
+  {
+    "id": "fTop",
+    "text": "File",
+    "items": [
+      {
+        "id": "ftNWin",
+        "text": "New Window"
+      },
+      {
+        "id": "ftPrint",
+        "text": "Print",
+        "enabled": "false",
+        "img": "printer.png",
+        "imgdis": "printer_dis.png"
+      },
+      {
+        "id": "fts0",
+        "type": "separator"
+      },
+      {
+        "id": "ftQuit",
+        "text": "Quit"
+      }
+    ]
+  },
+  {
+    "id": "eTop",
+    "text": "Edit",
+    "enabled": false
+  },
+  {
+    "id": "hTop",
+    "text": "Help",
+    "enabled": false
+  }
+]

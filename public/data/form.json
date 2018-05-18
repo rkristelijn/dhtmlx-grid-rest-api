@@ -1,0 +1,36 @@
+[
+  {
+    "type": "fieldset",
+    "name": "Name",
+    "label": "Name",
+    "inputWidth": "auto",
+    "list": [
+      {
+        "type": "input",
+        "label": "First Name",
+        "name": "fname",
+        "offsetleft": 15
+      },
+      {
+        "type": "input",
+        "label": "Last Name",
+        "name": "lname",
+        "offsetleft": 15
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "name": "Internet",
+    "label": "Internet",
+    "inputWidth": "auto",
+    "list": [
+      {
+        "type": "input",
+        "label": "E-mail",
+        "name": "email",
+        "offsetleft": 15
+      }
+    ]
+  }
+]
