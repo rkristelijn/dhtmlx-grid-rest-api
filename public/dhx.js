@@ -13,56 +13,42 @@ dhtmlxEvent(window, "load", function () {
   toolbar.loadStruct("public/data/toolbar.xml");
 
   var contactsGrid = layout.cells("a").attachGrid();
-  //contactsGrid.attachHeader("#text_filter,#text_filter,#text_filter");
+  contactsGrid.attachHeader("#text_filter,#text_filter,#text_filter");
 
-  //contactsGrid.enableEditEvents(true,false,true);
   contactsGrid.init();
-  //contactsGrid.post("data.php?id=1","data=10",null,"json");
-  //contactsGrid.load("public/data/grid.json", "json");
   contactsGrid.load("connector/contacts", "json");
-  // contactsGrid.setEditable(true);
 
   contactForm = layout.cells("b").attachForm();
   contactForm.loadStruct("public/data/form.xml");
   contactForm.bind(contactsGrid);
 
-  var dpg = new dataProcessor("/connector/contacts/");         //inits dataProcessor
+  var dpg = new dataProcessor("/connector/contacts/");
   dpg.enableDebug(true);
   dpg.setUpdateMode('row');
-  dpg.init(contactsGrid);   //associates the dataProcessor instance with the grid
+  dpg.init(contactsGrid);
   dpg.setTransactionMode("REST");
 
   dpg.attachEvent("onBeforeUpdate", function (id, state, data) {
-    console.log("BEFORE:", id, state, data);
     dpg.setUpdated(id, false);
     return true;
   });
   dpg.attachEvent("onAfterUpdate", function (sid, action, tid, tag) {
     if (action == "inserted") {
-      console.log('inserted');
-      contactsGrid.selectRowById(tid);        //selects the newly-created row
-      contactForm.setFocusOnFirstActive();//set focus to the 1st form's input
-    } else {
-      console.log("ACTION:", sid, action, tid, tag);
+      contactsGrid.selectRowById(tid);
+      contactForm.setFocusOnFirstActive();
     }
   });
 
 
   contactForm.attachEvent("onButtonClick", function (name) {
-    console.log(name);
     dpg.setUpdateMode('off');
-    contactForm.save();     //sends the values of the updated row to the server
+    contactForm.save();
     dpg.sendData();
     dpg.setUpdateMode('row');
-    //return false;
   });
-  // contactForm.attachEvent("onblur", function () {
-  //   contactForm.save();
-  // })
 
   toolbar.attachEvent("onclick", function (id) {
     if (id == "newContact") {
-      console.log('newContact');
       var rowId = contactsGrid.uid();
       var pos = contactsGrid.getRowsNum();
       contactsGrid.addRow(rowId, ["New contact", "", ""], pos);
@@ -70,19 +56,17 @@ dhtmlxEvent(window, "load", function () {
       contactForm.setFocusOnFirstActive();
     };
     if (id == "delContact") {
-      console.log('delContact');
       var rowId = contactsGrid.getSelectedRowId();
       var rowIndex = contactsGrid.getRowIndex(rowId);
       if (rowId != null) {
-        //dpg.setUpdateMode('off');
         dpg.ignore(() => {
           contactsGrid.deleteRow(rowId);
           fetch('/connector/contacts/' + rowId, {
             method: 'delete'
           }).then(function (response) {
-            console.log('response', response);
+            //
           }).catch(function (err) {
-            console.log('error', err);
+            //
           });
           if (rowIndex != (contactsGrid.getRowsNum() - 1)) {
             contactsGrid.selectRow(rowIndex + 1, true);
@@ -90,7 +74,6 @@ dhtmlxEvent(window, "load", function () {
             contactsGrid.selectRow(rowIndex - 1, true)
           }
         });
-        //dpg.setUpdateMode('row');
       }
     }
   });

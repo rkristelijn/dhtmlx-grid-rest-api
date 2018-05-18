@@ -1,10 +1,12 @@
 const express = require('express');
+const logger = require('express-log');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/cms');
+mongoose.set('debug', true);
 let db = mongoose.connection;
 
 let Schema = mongoose.model('contacts', mongoose.Schema({
@@ -16,6 +18,7 @@ db.once('open', () => {
   console.log('Connected to mongoose');
 });
 
+app.use(logger());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -29,35 +32,20 @@ app.get('/', (req, res) => {
 
 app.route('/connector/contacts')
   .get((req, res) => {
-    console.log('get');
     Schema.find({}, (err, contacts) => {
-      if (err) {
-        console.log(err);
-      } else {
+      if (!err) {
         res.json(initGrid(contacts));
-        //res.json(contacts);
       }
     });
-  })
-  .post((req, res) => {
-    console.log('post');
   });
 
 app.route('/connector/contacts/:id')
-  .get((req, res) => {
-    console.log('get:', req.params.id);
-  })
   .put((req, res) => {
-    console.log('put::', req.params, req.body);
     let data = req.body;
     delete data.gr_id;
     delete data.head;
-    console.log('--put:', req.params.id, data);
 
     Schema.findById(req.params.id, (err, contact) => {
-      if (err) {
-        console.log(err);
-      }
       if (contact) {
         contact.fname = data.fname;
         contact.lname = data.lname;
@@ -66,69 +54,22 @@ app.route('/connector/contacts/:id')
         res.json(contact);
       } else {
         let newContact = new Schema(data);
-        console.log(newContact);
         newContact.save((err, contact) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log('created:', contact);
+          if (!err) {
             res.json(contact);
           }
         });
       }
     });
-
-    // Schema.find({}, (err, contact) => {
-    //   if (!contact) {
-    //     console.log('put:creating...', req.body);
-    //     let newContact = new Schema(req.body);
-    //     newContact.save((err, contact) => {
-    //       res.send(contact);
-    //     });
-    //   } else {
-    //     res.send(contact);
-    //   }
-    // });
   })
   .delete((req, res) => {
-    console.log('delete', req.params.id);
     Schema.findById(req.params.id, (err, contact) => {
-      if (err) {
-        console.log('error:', err);
-      } else if (!contact) {
-        console.log('contact not found');
-      } else {
+      if (contact) {
         contact.remove();
         res.sendStatus(204);
       }
     });
   });
-// app.get('/connector/contacts', (req, res) => {
-//   let Schema = mongoose.model('contacts', mongoose.Schema({}));
-//   let contacts = Schema.find({});
-//   res.sendStatus(200).end(contacts);
-// });
-// app.put('/connector/:id', (req, res) => {
-//   console.log(req.data);
-//   // let Schema = mongoose.model('contacts', mongoose.Schema({}));
-//   // let id = req.data.id;
-//   // let action = req.data.action;
-//   // let data = req.body.data;
-//   // delete data.head;
-
-//   // Schema.find((dbFindErr, document) => {
-//   //   if(document) {
-//   //     document.save(data);
-//   //     res.sendStatus(200);
-//   //     res.end(document);
-//   //   } else {
-//   //     let newDocument = new Schema(data);
-//   //     newDocument.save();
-//   //     res.sendStatus(200);
-//   //     res.end(newDocument);
-//   //   }
-//   // });
-// });
 
 function initGrid(data) {
   let payload = {
@@ -153,12 +94,10 @@ function initGrid(data) {
       type: 'ed',
       sort: 'str',
       value: 'Email'
-    }
-    ],
+    }],
     rows: []
   };
   for (row of data) {
-    console.log('adding', row);
     let values = [row.fname, row.lname, row.email];
     payload.rows.push({ id: row._id, data: values });
   }
