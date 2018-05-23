@@ -31,6 +31,11 @@ app.get('/', (req, res) => {
 });
 
 app.route('/connector/contacts')
+  .post((req, res) => {
+    Schema.create(req.body, (err, contact) => {
+      res.json(contact);
+    });
+  })
   .get((req, res) => {
     Schema.find({}, (err, contacts) => {
       if (!err) {
@@ -52,13 +57,6 @@ app.route('/connector/contacts/:id')
         contact.email = data.email;
         contact.save();
         res.json(contact);
-      } else {
-        let newContact = new Schema(data);
-        newContact.save((err, contact) => {
-          if (!err) {
-            res.json(contact);
-          }
-        });
       }
     });
   })
